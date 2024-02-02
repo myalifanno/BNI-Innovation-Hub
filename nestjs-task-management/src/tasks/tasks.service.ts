@@ -32,7 +32,7 @@ export class TasksService {
   deleteTask(id: string): string {
     this.tasks = this.tasks.filter((task) => task.id !== id)
 
-    const message = `id: ${id} has been deleted`
-    return message
+    const notice = `id: ${id} has been deleted`
+    return notice
   }
 }
