@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { People, PeopleStatus } from './test-data.model';
 import { v4 as uuidv4 } from 'uuid';
 import { CreatePeopleDto } from './dto/create-people.dto';
@@ -13,7 +13,13 @@ export class TestDataService {
   }
 
   getPeopleById(id: string): People {
-    return this.people.find((people) => people.id === id);
+    const foundPeople = this.people.find((people) => people.id === id);
+
+    if (!foundPeople) {
+      throw new NotFoundException();
+    }
+
+    return foundPeople;
   }
 
   filterPeople(filterPeopleDto: FilterPeopleDto): People[] {
@@ -38,11 +44,12 @@ export class TestDataService {
       });
     }
 
-    return people
+    return people;
   }
 
   removePeopleById(id: string): string {
-    this.people = this.people.filter((people) => people.id !== id);
+    const foundPeople = this.getPeopleById(id)
+    this.people = this.people.filter((people) => people.id !== foundPeople.id);
 
     const notice = `id: ${id} has been deleted`;
     return notice;
@@ -65,9 +72,9 @@ export class TestDataService {
     return people;
   }
 
-  updatePeopleStatus(id: string): People {
-    const peopleFound = this.people.find((people) => people.id === id);
-    peopleFound.status = PeopleStatus.IN_PROGRESS;
+  updatePeopleStatus(id: string, status: PeopleStatus): People {
+    const peopleFound = this.getPeopleById(id);
+    peopleFound.status = status;
     return peopleFound;
   }
 }

@@ -1,8 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Module,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { TestDataService } from './test-data.service';
 import { People } from './test-data.model';
 import { CreatePeopleDto } from './dto/create-people.dto';
 import { FilterPeopleDto } from './dto/people-filter.dto';
+import { UpdatePeopleStatusDto } from './dto/update-people-status.dto';
 
 @Controller('test-data')
 export class TestDataController {
@@ -10,16 +21,16 @@ export class TestDataController {
 
   @Get()
   getAllPeople(@Query() filterPeopleDto: FilterPeopleDto): People[] {
-    if(Object.keys(filterPeopleDto).length) {
-      return this.testDataService.filterPeople(filterPeopleDto)
+    if (Object.keys(filterPeopleDto).length) {
+      return this.testDataService.filterPeople(filterPeopleDto);
     } else {
       return this.testDataService.getAllPeople();
     }
   }
 
   @Get('/:id')
-  getPeopleById(@Param('id') id:string): People {
-    return this.testDataService.getPeopleById(id)
+  getPeopleById(@Param('id') id: string): People {
+    return this.testDataService.getPeopleById(id);
   }
 
   @Post()
@@ -28,12 +39,16 @@ export class TestDataController {
   }
 
   @Delete('/:id')
-  removePeopleById(@Param('id') id:string): string {
-    return this.testDataService.removePeopleById(id)
+  removePeopleById(@Param('id') id: string): string {
+    return this.testDataService.removePeopleById(id);
   }
 
   @Patch('/:id/status')
-  updatePeopleStatus(@Param('id') id: string): People {
-    return this.testDataService.updatePeopleStatus(id)
+  updatePeopleStatus(
+    @Param('id') id: string,
+    @Body() updatePeopleStatusDto: UpdatePeopleStatusDto
+  ): People {
+    const { status } = updatePeopleStatusDto;
+    return this.testDataService.updatePeopleStatus(id, status);
   }
 }
